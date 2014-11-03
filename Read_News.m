@@ -2,7 +2,7 @@
 tic
 path = 'C:\Users\Administrator\Documents\MATLAB\DA_HW3\20_newsgroups';
 no_samples = 30;
-no_of_files = 10;
+no_of_files = 100;
 directories = dir(path);
 max_kfold = 5;
 no_of_features = 100;
@@ -159,10 +159,10 @@ end
  ground_truth(fold, : ) = labels_test(fold,:) ;
  for p= 1:1:10
      Prediction_knn(fold,:,p) = knn_labels(:,fold,p)' ;
-    [precision_knn(fold,:,p), recall_knn(fold,:,p)] = Precision_recall(ground_truth(fold,:),Prediction_knn(fold,:,p), class_labels');
+    [precision_knn(fold,:,p), recall_knn(fold,:,p)] = Precision_recall(ground_truth(fold,:),Prediction_knn(fold,:,p), class_labels);
  end
  Prediction_tree(fold,:) = tree_labels(:,fold)' ;
-[precision_tree(fold,:), recall_tree(fold,:)] = Precision_recall(ground_truth(fold,:),Prediction_tree(fold,:), class_labels');
+[precision_tree(fold,:), recall_tree(fold,:)] = Precision_recall(ground_truth(fold,:),Prediction_tree(fold,:), class_labels);
 
  Prediction_nbc(fold,:) = nbc_labels(:,fold)' ;
 [precision_nbc(fold,:), recall_nbc(fold,:)] = Precision_recall(ground_truth(fold,:),Prediction_nbc(fold,:), class_labels);
@@ -192,10 +192,15 @@ end
 % avg_precision_nbc = sum(precision_nbc)/size(precision_nbc,2);
 % avg_recall_nbc = sum(recall_nbc)/size(recall_nbc,2);
 % 
+f1_nbc= mean((2.*(precision_nbc.*recall_nbc)./(precision_nbc+recall_nbc+1)),1);
+f1_tree= mean((2.*(precision_tree.*recall_tree)./(precision_tree+recall_tree+1)),1);
+f1_knn1= mean((2.*(precision_knn(:).*recall_knn(:))./(precision_knn(:)+recall_knn(:)+1)),1);
+f1_knn2= mean((2.*(precision_knn(:,:,1).*recall_knn(:,:,1))./(precision_knn(:,:,1)+recall_knn(:,:,1)+1)),1);
+
 figure
-plot(2.*(precision_nbc.*recall_nbc)./(precision_nbc+recall_nbc))
-title('f1 score of nbc vs fold ');
-xlabel('fold');
+plot(f1_nbc)
+title('f1 score of nbc vs class');
+xlabel('class');
 ylabel('f1 score');
 %figure
 % plot(recall_nbc)
@@ -213,9 +218,9 @@ fclose(stpwrd);
 
 
 figure
-plot(2.*(precision_tree.*recall_tree)./(precision_tree+recall_tree))
-title('f1 score of tree vs fold ');
-xlabel('fold');
+plot(f1_tree)
+title('f1 score of tree vs class');
+xlabel('class');
 ylabel('f1 score');
 %figure
 % plot(recall_tree)
@@ -224,7 +229,7 @@ ylabel('f1 score');
 % ylabel('recall');
 
 figure
-plot(2.*(precision_knn(:).*recall_knn(:))./(precision_knn(:)+recall_knn(:)))
+plot(f1_knn1)
 title('f1 score of knn vs #neihbours ');
 xlabel('fold');
 ylabel('f1 score');
@@ -236,7 +241,7 @@ ylabel('f1 score');
 
 
 figure
-plot(2.*(precision_knn(:,:,1).*recall_knn(:,:,1))./(precision_knn(:,:,1)+recall_knn(:,:,1)))
+plot(f1_knn2)
 title('f1 score of knn vs fold ');
 xlabel('fold');
 ylabel('f1 score');
@@ -252,36 +257,5 @@ title('recall of nbc vs fold ');
 xlabel('fold');
 ylabel('recall');
 
-figure
-plot(precision_knn(:,:,1))
-title('precion of knn vs fold ');
-xlabel('fold');
-ylabel('precision');
-figure
-plot(recall_knn(:,:,1))
-title('recall of knn vs fold ');
-xlabel('fold');
-ylabel('recall');
 
-figure
-plot(precision_knn(:))
-title('precion of knn vs #neighbors ');
-xlabel('fold');
-ylabel('precision');
-figure
-plot(recall_knn(:))
-title('recall of knn vs #neighbors ');
-xlabel('fold');
-ylabel('recall');
-
-figure
-plot(precision_tree)
-title('precision of tree vs fold ');
-xlabel('fold');
-ylabel('precision');
-figure
-plot(recall_tree)
-title('recall of tree vs fold ');
-xlabel('fold');
-ylabel('recall');
 toc
